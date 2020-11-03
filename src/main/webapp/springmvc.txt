@@ -1,0 +1,160 @@
+﻿DispatcherServlet流程控制中心
+
+1.映射器组件    解析请求 /hello.do，再返回前端控制器
+2.适配器组件   找到controller类以及方法
+3.处理器组件  让controller方法去执行返回ModelAndView ,再返回前端控制器
+4.视图解析器组件  根据prefix + String+suffix，找到视图再渲染
+
+springmvc 框架是基于组件式开发
+
+
+post请求解决中文乱码问题 在web.xml里配置CharacterEncodingFilter
+日期转换第一种方式
+@DateTimeFormat(pattern="yyyy-MM-dd") 每个类的日期属性都需要加，而且日期用这个日期格式，不能用例如yyyy/MM/dd
+自定义日期类型转换器
+针对整个工程的
+
+
+
+public class StringToDate implements Converter<String, Date> {
+    @Override
+    public Date convert(String s) {
+        if (s==null){
+            throw new RuntimeException("请输入内容");
+        }
+        //进行转换
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            return    sdf.parse(s);
+        } catch (ParseException e) {
+           throw new RuntimeException(e);
+        }
+    }
+}
+<!--配置日期类转换器，类型转换器的组件，把日期类型转换注入到组件对象中-->
+    <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+        <property name="converters">
+            <set>
+                <bean class="cn.tx.demo2.StringToDate"></bean>
+            </set>
+        </property>
+    </bean>
+
+
+
+    <!--让映射器，适配器和处理器(默认不配置也可以)，配置组件时必须写-->
+    <mvc:annotation-driven conversion-service="conversionService"/>
+
+
+
+
+    restful风格,并不是规范，并不强制使用
+
+
+
+异步数据的交互方式
+ajax 请求 json 数据格式  服务器端获取json,把json封装到实体对象中，调用业务代码，把处理完的数据，换成json，相应出去
+需要fastjson 或者jsonLib
+
+springmvc框架实现
+用@RequestBody
+
+springmvc底层用到这些坐标做转换
+  <!--json和javabean进行数据转换的-->
+  
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>2.9.8</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.9.8</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>2.9.8</version>
+    </dependency>
+
+
+    springmvc文件上传
+    XXX.jpg 上传  DispatcherServlet判断是否正在做文件上传，
+    需要配置一个文件上传解析器组件
+    解析request请求，上传文件封装到MultipartFile对象，解析过后，再通过DispatcherServlet找到对应的适配器组件
+    找到对应对应的controller以及方法，用MultiparitFile 来接收,调用upload方法即可
+
+
+      <!--文件上传-->
+    <dependency>
+      <groupId>commons-fileupload</groupId>
+      <artifactId>commons-fileupload</artifactId>
+      <version>1.3.3</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.6</version>
+    </dependency>
+  </dependencies>
+
+
+   //把文件上传的位置
+        String realPath = request.getSession().getServletContext().getRealPath("/uploads");
+        //创建该文件
+        File file = new File(realPath);
+        System.out.println(realPath);
+        //判断该文件夹是否存在
+        if (!file.exists()){
+            file.mkdirs();
+        }
+
+        //获得上传文件的名称
+        String filename = upload.getOriginalFilename();
+        //上传文件 new File(file,filename)//文件夹file里new一个文件名filename的文件
+        upload.transferTo(new File(file,filename));
+        return "suc";
+
+
+
+        拦截器拦截请求
+        拦截controller里的方法，具体拦截哪些根据你的配置
+
+        拦截器即使aop思想的一种实现，是一种方法增强
+        可以有拦截器链
+        经过拦截器链最后执行controller里的方法
+
+
+       1. 过滤器是javaweb学习，web三大组件filter,listener,servlet，拦截器是springmvc是各自框架里，依赖各自的框架
+        而过滤器是web环境才可以用
+
+       2.过滤器配置了/*,任何资源全部拦截，而拦截器只会拦截controller里的请求，不会拦截静态资源js/css不会拦截
+
+       拦截器查看权限和是否登录这些
+
+
+
+       三大框架整合
+       1.先去搭建整合环境
+       创建项目，引入坐标，
+       创建数据库
+       2.保证每一个框架可以单独使用，考虑整合问题（spring整合其他框架）
+
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
