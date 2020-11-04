@@ -141,7 +141,24 @@ springmvc底层用到这些坐标做转换
        创建数据库
        2.保证每一个框架可以单独使用，考虑整合问题（spring整合其他框架）
 
+spring整合springmvc
+ioc容器是子容器,里面有controller对象
 
+
+加载applicationContext.xml配置文件,Ioc容器父容器，放的service容器
+
+只能把service注入到controller，父容器注入到子容器
+
+
+启动服务器，加载spring的配置文件，配置监听器，监听ServletContext对象(最大域对象)的创建和销毁，即服务器启动即ServletContext
+对象创建，服务器关闭，ServletContext对象销毁
+在监听器中加载spring的配置文件ApplicationContext.xml
+
+
+spring整合mybatis就是把dao生成的代理对象，存入到ioc容器中，
+把dao的代理对象注入到service对象中
+
+把sqlSessionFactory交给ioc容器管理
         
 
 

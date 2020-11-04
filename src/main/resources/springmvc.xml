@@ -17,9 +17,9 @@
 <!--    <mvc:resources mapping="/css/" location="/css/**"/>-->
 <!--    <mvc:resources mapping="/image/" location="image/**"/>-->
 
-
-
-    <context:component-scan base-package="cn.tx"/>
+    <!--开启注解的扫描，扫描controller-->
+    <context:component-scan base-package="cn.tx.controller"/>
+<!--    <context:component-scan base-package="cn.tx"/>-->
     <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="prefix" value="/pages/"/>
         <property name="suffix" value=".jsp"/>
@@ -53,9 +53,9 @@
 <!--       <mvc:exclude-mapping path=""/>-->
        <bean class="cn.tx.demo4.MyInterceptor2"/>
    </mvc:interceptor>
-    <mvc:interceptor>
-        <mvc:mapping path="/**"/>
-        <bean class="cn.tx.demo4.MyInterceptor3"/>
-    </mvc:interceptor>
+<!--    <mvc:interceptor>-->
+<!--        <mvc:mapping path="/**"/>-->
+<!--        <bean class="cn.tx.demo4.MyInterceptor3"/>-->
+<!--    </mvc:interceptor>-->
 </mvc:interceptors>
 </beans>
